@@ -14,6 +14,18 @@ app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 2
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
+const headerParserMiddleware = (req) => {
+  let _headerJson = {}
+  let _ipAddress = req?.socket?.remoteAddress
+  let _software = req?.rawHeaders[Number(req?.rawHeaders.indexOf('User-Agent')) + 1];
+  let _language = req?.rawHeaders[Number(req?.rawHeaders.indexOf('Accept-Language')) + 1];
+  return _headerJson = {
+    ipaddress: _ipAddress,
+    language: _language,
+    software: _software
+  }
+} 
+
 // http://expressjs.com/en/starter/basic-routing.html
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
@@ -25,7 +37,7 @@ app.get('/api/hello', function (req, res) {
 });
 
 app.get('/api/whoami', function (req, res) {
-  res.json({ whoami: 'hello whoami' });
+  res.json(headerParserMiddleware(req));
 });
 
 // listen for requests :)
